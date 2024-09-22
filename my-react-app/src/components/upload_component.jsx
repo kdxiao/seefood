@@ -1,113 +1,49 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-function ImageUploadBox() {
-  const [imagePreview, setImagePreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [recipes, setRecipes] = useState(null);
-  const [error, setError] = useState(null);
+const ImageUpload = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [response, setResponse] = useState("");
 
-  const handleImageUpload = (event) => {
-    setError(null); // Reset error state
-    const file = event.target.files[0];
-    if (file) {
-      // Generate a preview of the image
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-
-      // Upload the image to the backend API
-      uploadImage(file);
-    }
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
   };
 
-  const uploadImage = (file) => {
-    // EDIT HERE FOR CAlling the api
-    setLoading(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!selectedFile) return;
+
     const formData = new FormData();
-    formData.append('image', file);
-    console.log('passed in an image');
-    fetch('http://localhost:5000/api/process-image', {
-      method: 'POST',
-      body: formData,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error processing image');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setLoading(false);
-        setRecipes(data.recipes);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setError(error.message);
-        console.error('Error processing image:', error);
-      });
-  };
+    formData.append("image", selectedFile);
 
-  const handleBoxClick = () => {
-    document.getElementById('imageUploadInput').click();
+    try {
+      // Send the image to the backend
+      console.log(formData);
+      const res = await axios.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Display the response from the server (e.g., recipe suggestions)
+      setResponse(res.data);
+    } catch (error) {
+        console.log("SPONGEBOB");
+        console.error("Error uploading the image:", error);
+    }
   };
 
   return (
     <div>
-      <div
-        onClick={handleBoxClick}
-        style={{
-          border: '2px dashed #ccc',
-          borderRadius: '8px',
-          width: '300px',
-          height: '300px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          backgroundColor: '#f9f9f9',
-          position: 'relative',
-          overflow: 'hidden',
-          margin: '0 auto', // Center the box
-        }}
-      >
-        <input
-          type="file"
-          accept="image/*"
-          id="imageUploadInput"
-          onChange={handleImageUpload}
-          style={{ display: 'none' }}
-        />
-        {imagePreview ? (
-          <img
-            src={imagePreview}
-            alt="Uploaded"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
-          />
-        ) : (
-          <p style={{ color: '#aaa', fontSize: '16px', textAlign: 'center' }}>
-            Click to upload a photo
-          </p>
-        )}
-      </div>
+      <h1>Upload an Image for Recipe Suggestions</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <button type="submit">Upload Image</button>
+      </form>
 
-      {loading && <p>Processing image, please wait...</p>}
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {recipes && (
-        <div style={{ marginTop: '20px' }}>
-          <h2>Suggested Recipes:</h2>
-          <pre>{recipes}</pre>
-        </div>
-      )}
+      {response && <div><h3>Recipe Suggestions:</h3><p>{response}</p></div>}
     </div>
   );
-}
+};
 
-export default ImageUploadBox;
+export default ImageUpload;
