@@ -1,0 +1,53 @@
+/* Button Styles */
+.styled-button {
+    background-color: #4CAF50; /* Green background */
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.styled-button:hover {
+    background-color: #45a049; /* Darker green when hovered */
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    font-size: 20px;
+    color: #333;
+}
+
+/* Image background styling */
+.food-background {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Small text styling */
+.small-text {
+    font-size: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
